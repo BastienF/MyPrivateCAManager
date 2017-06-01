@@ -1,0 +1,14 @@
+---
+
+- name: Openssl command - "{{ command_name }}"
+  environment:
+    PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
+  docker_container:
+    name: "{{ ca_manager_container_name }}"
+    image: bastienf/openssl
+    state: started
+    interactive: true
+    command: "{{ openssl_command }}"
+    detach: false
+    volumes:
+      - "{{ ca_manager_certificate_location }}:/root/ca"

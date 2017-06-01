@@ -1,0 +1,14 @@
+---
+
+ca_manager_output_location: "../../output"
+ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager_cn_name }}"
+
+ca_manager_root_ca_key_name: "ca.key.pem"
+ca_manager_root_ca_certificate_name: "ca.cert.pem"
+ca_manager_root_ca_pass: "s3cret"
+
+ca_manager_cn_name: "MyCA"
+
+ca_manager_container_name: "ca_manager_openssl"
+
+ca_manager_issue_root_ca: true

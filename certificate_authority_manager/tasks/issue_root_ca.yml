@@ -1,0 +1,31 @@
+---
+
+- name: Make private dir private
+  file: path="{{ ca_manager_certificate_location }}/private" mode="0700"
+
+- name: init cert database
+  file: path="{{ ca_manager_certificate_location }}/index.txt" state=touch
+
+- name: Generate Openssl conf file
+  template: src="openssl.cnf.j2" dest="{{ ca_manager_certificate_location }}/openssl.cnf"
+
+- include: docker_openssl_handler.yml
+  vars:
+    openssl_command: "genrsa -aes256 -out /root/ca/private/{{ ca_manager_root_ca_key_name }} -passout pass:{{ ca_manager_root_ca_pass }} 4096"
+    command_name: "Create the root key"
+
+- name: make ca key private
+  file: path="{{ ca_manager_certificate_location }}/private/{{ ca_manager_root_ca_key_name }}" mode="0400"
+
+- include: docker_openssl_handler.yml
+  vars:
+    openssl_command: >
+     req -config openssl.cnf
+     -key private/{{ ca_manager_root_ca_key_name }} -passin pass:{{ ca_manager_root_ca_pass }}
+     -new -x509 -days 7300 -sha256 -extensions v3_ca
+     -out certs/{{ ca_manager_root_ca_certificate_name }}
+     -subj "/C=FR/ST=IdF/L=Paris/O=CloudCustom/CN={{ ca_manager_cn_name }}"
+    command_name: "Create the root certificate"
+
+- name: make ca cert readable
+  file: path="{{ ca_manager_certificate_location }}/certs/{{ ca_manager_root_ca_certificate_name }}" mode="0444"
