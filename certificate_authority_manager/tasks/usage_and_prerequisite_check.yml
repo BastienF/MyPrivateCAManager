@@ -15,6 +15,10 @@
   fail: msg="You have to specify the certificate CN in ca_manager_cn_name"
   when: ca_manager_cn_name is undefined
 
+- name: Check certificate subject is provided
+  fail: "msg='You have to specify the certificate subject without CN in format (/C=FR/ST=IdF/L=Paris/O=CloudCustom) in: ca_manager_subject_without_cn'"
+  when: ca_manager_subject_without_cn is undefined
+
 - stat: path="{{ ca_manager_certificate_location }}"
   register: cert_dir
 

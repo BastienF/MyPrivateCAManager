@@ -7,7 +7,7 @@
      -key private/{{ ca_manager_key_name }} {{ key_decipher|default() }}
      -new -x509 -days 7300 -sha256 -extensions v3_ca
      -out certs/{{ ca_manager_certificate_name }}
-     -subj "/C=FR/ST=IdF/L=Paris/O=CloudCustom/CN={{ ca_manager_cn_name }}"
+     -subj "{{ ca_manager_subject_without_cn }}/CN={{ ca_manager_cn_name }}"
     command_name: "RootCA - Create the root certificate"
 
 - name: Create the root ca chain file

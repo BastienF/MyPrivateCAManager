@@ -2,6 +2,7 @@
 
 ## Mandatory user provided parameters
 #ca_manager_cn_name: "MyCA"
+#ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=CloudCustom"
 
 ## Exactly one to true (mutually exclusive)
 #ca_manager_issue_root_ca: true
@@ -28,6 +29,5 @@ ca_manager_request_file_name: "{{ ca_manager_cn_name }}.csr.pem"
 ca_manager_fullchain_certificate_name: "{{ ca_manager_cn_name }}-chain.cert.pem"
 ca_manager_validation_policy: "{{ (ca_manager_issue_root_ca|default(false)|bool) | ternary('policy_strict', 'policy_loose') }}"
 ca_manager_key_length: "{{ (ca_manager_issue_ca) | ternary('4096', '2048') }}"
-
 
 ca_manager_container_name: "ca_manager_openssl"
