@@ -1,5 +1,7 @@
 ---
 
+- include: usage_and_prerequisite_check.yml
+
 - name: Install required docker modules
   pip:
     name: "{{ item }}"
@@ -8,10 +10,12 @@
     - docker
     - docker-py
 
-- name: Clear out
-  file: path="{{ item }}" state=absent mode=0755
-  with_items:
-    - "{{ ca_manager_certificate_location }}"
+- name: Clear out potential openssl container
+  environment:
+    PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
+  docker_container:
+    name: "{{ ca_manager_container_name }}"
+    state: absent
 
 - name: Generate certificat dir tree
   file: path="{{ item }}" state=directory mode=0755
@@ -29,11 +33,32 @@
   template: src="openssl.cnf.j2" dest="{{ ca_manager_certificate_location }}/openssl.cnf"
   vars:
     policy: "{{ ca_manager_validation_policy }}"
-  when: not ca_manager_issue_certificate|default(false)|bool
+  when: ca_manager_issue_ca | bool
+
+- name: init cert database
+  file: path="{{ ca_manager_certificate_location }}/index.txt" state=touch
+  when: ca_manager_issue_ca | bool
+
+- name: init cert database serial
+  shell: echo 1000 > "{{ ca_manager_certificate_location }}/serial"
+  when: ca_manager_issue_ca | bool
+
+- name: Define ciphering parameters when passphrase provided
+  set_fact:
+    key_cipher: "-aes256 -passout pass:'{{ ca_manager_key_pass }}'"
+    key_decipher: "-passin pass:'{{ ca_manager_key_pass }}'"
+  when: ca_manager_key_pass is defined
+
+- name: Define signin CA ciphering parameters when passphrase provided
+  set_fact:
+    signin_ca_key_decipher: '-passin pass:"{{ ca_manager_signin_ca_key_pass }}"'
+  when: ca_manager_signin_ca_key_pass is defined
 
 - include: docker_openssl_handler.yml
   vars:
-    openssl_command: "genrsa -aes256 -out private/{{ ca_manager_key_name }} -passout pass:{{ ca_manager_key_pass }} 4096"
+    openssl_command: >
+      genrsa  -out private/{{ ca_manager_key_name }}
+      {{ key_cipher|default() }} {{ ca_manager_key_length }}
     command_name: "Create the certificate key"
 
 - name: make certificate key private
@@ -44,3 +69,12 @@
 
 - include: issue_intermediate_ca.yml
   when: ca_manager_issue_intermediate_ca|default(false)|bool
+
+- include: issue_certificate.yml
+  when: ca_manager_issue_certificate|default(false)|bool
+
+- name: make cert readable
+  file: path="{{ item }}" mode="0444"
+  with_items:
+    - "{{ ca_manager_certificate_location }}/certs/{{ ca_manager_certificate_name }}"
+    - "{{ ca_manager_certificate_location }}/certs/{{ ca_manager_fullchain_certificate_name }}"

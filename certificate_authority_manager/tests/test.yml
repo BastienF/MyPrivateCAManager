@@ -1,5 +1,32 @@
 ---
 - hosts: localhost
-  remote_user: root
+  serial: 1
   roles:
-    - certificate_authority_manager
+    - {
+        role: certificate_authority_manager,
+        ca_manager_issue_root_ca: true,
+        ca_manager_cn_name: "MyCompany_RootCA",
+        ca_manager_key_pass: "s3cret p@ss phrase"
+      }
+    - {
+        role: certificate_authority_manager,
+        ca_manager_issue_intermediate_ca: true,
+        ca_manager_cn_name: "MarketingDpt_CA",
+        ca_manager_key_pass: "s3cret p@ss phrase",
+        ca_manager_signin_ca_cn_name: "MyCompany_RootCA",
+        ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+      }
+    - {
+        role: certificate_authority_manager,
+        ca_manager_issue_certificate: true,
+        ca_manager_cn_name: "www.good-deal.com",
+        ca_manager_signin_ca_cn_name: "MarketingDpt_CA",
+        ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+      }
+    - {
+        role: certificate_authority_manager,
+        ca_manager_issue_certificate: true,
+        ca_manager_cn_name: "www.black-friday-special.com",
+        ca_manager_signin_ca_cn_name: "MarketingDpt_CA",
+        ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+      }

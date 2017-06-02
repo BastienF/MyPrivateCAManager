@@ -1,0 +1,31 @@
+---
+
+- set_fact:
+    number_of_true: "{{ (ca_manager_issue_root_ca|default(false)|bool|int) + (ca_manager_issue_intermediate_ca|default(false)|bool|int) + (ca_manager_issue_certificate|default(false)|bool|int) }}"
+
+- name: Check certificate type
+  fail: msg="Exactly one to true (mutually exclusive) - ca_manager_issue_root_ca, ca_manager_issue_intermediate_ca, ca_manager_issue_certificate"
+  when: number_of_true|int != 1
+
+- name: Check signin CA name is provided when needed
+  fail: msg="You have to specify the signin CA CN in ca_manager_signin_ca_cn_name"
+  when: (not (ca_manager_issue_root_ca|default(false)|bool)) and ca_manager_signin_ca_cn_name is undefined
+
+- name: Check certificate CN is provided
+  fail: msg="You have to specify the certificate CN in ca_manager_cn_name"
+  when: ca_manager_cn_name is undefined
+
+- stat: path="{{ ca_manager_certificate_location }}"
+  register: cert_dir
+
+- name: Check if CN is not already in use
+  fail: "msg='There already is a certificate named: {{ ca_manager_cn_name }}'"
+  when: cert_dir.stat.exists
+
+- stat: path="{{ ca_manager_signin_ca_cert_fullchain_location }}"
+  register: ca_fullchain_cert
+
+- name: Check if signin CA exists
+  fail: "msg='There is no CA named: {{ ca_manager_signin_ca_cn_name }}'"
+  when: (not (ca_manager_issue_root_ca|default(false)|bool)) and ca_fullchain_cert.stat.exists  == False
+

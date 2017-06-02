@@ -1,2 +1,3 @@
 ---
-# vars file for certificate_authority_manager
+
+ca_manager_issue_ca: "{{ (ca_manager_issue_root_ca|default(false)|bool) or (ca_manager_issue_intermediate_ca|default(false)|bool) }}"
