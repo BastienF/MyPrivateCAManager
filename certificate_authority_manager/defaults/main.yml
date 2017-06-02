@@ -1,6 +1,6 @@
 ---
 
-ca_manager_output_location: "../../output"
+ca_manager_output_location: "{{ role_path }}/../output"
 ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager_cn_name }}"
 ca_manager_signin_ca_cert_location: "{{ ca_manager_output_location }}/{{ ca_manager_signin_ca_cn_name }}"
 ca_manager_signin_ca_cert_location_docker: "/root/ca"
