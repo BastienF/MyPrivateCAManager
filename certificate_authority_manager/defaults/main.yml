@@ -2,13 +2,22 @@
 
 ca_manager_output_location: "../../output"
 ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager_cn_name }}"
+ca_manager_signin_ca_cert_location: "{{ ca_manager_output_location }}/{{ ca_manager_signin_ca_cn_name }}"
+ca_manager_signin_ca_cert_location_docker: "/root/ca"
 
-ca_manager_root_ca_key_name: "ca.key.pem"
-ca_manager_root_ca_certificate_name: "ca.cert.pem"
+ca_manager_root_ca_key_name: "{{ ca_manager_cn_name }}.key.pem"
+ca_manager_root_ca_certificate_name: "{{ ca_manager_cn_name }}.cert.pem"
 ca_manager_root_ca_pass: "s3cret"
+ca_manager_root_ca_policy: "policy_strict"
 
-ca_manager_cn_name: "MyCA"
+ca_manager_intermediate_ca_key_name: "{{ ca_manager_cn_name }}.key.pem"
+ca_manager_intermediate_ca_certificate_name: "{{ ca_manager_cn_name }}.cert.pem"
+ca_manager_intermediate_ca_request_name: "{{ ca_manager_cn_name }}.csr.pem"
+ca_manager_intermediate_ca_fullchain_name: "{{ ca_manager_cn_name }}-chain.cert.pem"
+ca_manager_intermediate_ca_pass: "s3cret"
+ca_manager_intermediate_ca_policy: "policy_loose"
+
+ca_manager_signin_ca_cn_name: "RootCA"
+#ca_manager_cn_name: "MyCA"
 
 ca_manager_container_name: "ca_manager_openssl"
-
-ca_manager_issue_root_ca: true

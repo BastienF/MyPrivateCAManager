@@ -20,6 +20,13 @@
     - "{{ ca_manager_certificate_location }}/certs"
     - "{{ ca_manager_certificate_location }}/newcerts"
     - "{{ ca_manager_certificate_location }}/private"
+    - "{{ ca_manager_certificate_location }}/csr"
+
+- name: Make private dir private
+  file: path="{{ ca_manager_certificate_location }}/private" mode="0700"
 
 - include: issue_root_ca.yml
   when: ca_manager_issue_root_ca|default(false)|bool
+
+- include: issue_intermediate_ca.yml
+  when: ca_manager_issue_intermediate_ca|default(false)|bool

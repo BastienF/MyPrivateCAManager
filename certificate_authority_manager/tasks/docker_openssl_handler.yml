@@ -11,4 +11,5 @@
     command: "{{ openssl_command }}"
     detach: false
     volumes:
-      - "{{ ca_manager_certificate_location }}:/root/ca"
+      - "{{ ca_manager_certificate_location }}:/root/cert"
+      - "{{ (ca_manager_issue_root_ca|default(false)|bool) | ternary('/tmp', ca_manager_signin_ca_cert_location) + ':' + ca_manager_signin_ca_cert_location_docker }}"
