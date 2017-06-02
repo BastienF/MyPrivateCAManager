@@ -21,7 +21,6 @@ ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager
 
 ca_manager_signin_ca_cert_location: "{{ ca_manager_output_location }}/{{ ca_manager_signin_ca_cn_name|default('default') }}"
 ca_manager_signin_ca_cert_fullchain_location: "{{ ca_manager_signin_ca_cert_location }}/certs/{{ ca_manager_signin_ca_cn_name|default('default') }}-chain.cert.pem"
-ca_manager_signin_ca_cert_location_docker: "/root/ca"
 
 ca_manager_key_name: "{{ ca_manager_cn_name }}.key.pem"
 ca_manager_certificate_name: "{{ ca_manager_cn_name }}.cert.pem"
@@ -29,5 +28,3 @@ ca_manager_request_file_name: "{{ ca_manager_cn_name }}.csr.pem"
 ca_manager_fullchain_certificate_name: "{{ ca_manager_cn_name }}-chain.cert.pem"
 ca_manager_validation_policy: "{{ (ca_manager_issue_root_ca|default(false)|bool) | ternary('policy_strict', 'policy_loose') }}"
 ca_manager_key_length: "{{ (ca_manager_issue_ca) | ternary('4096', '2048') }}"
-
-ca_manager_container_name: "ca_manager_openssl"

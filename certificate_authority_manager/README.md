@@ -1,38 +1,123 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+The purpose of this Ansible role is to allow you to manage a
+private Certification Authority inside your private network
+
+With this role you will be able to generate your Root CA.
+Share it and let people generate intermediate CA and certificates depending on their credentials
+
+This role is freely inspired by the configuration described by Jamie Nguyen on [jamielinux.com](https://jamielinux.com/docs/openssl-certificate-authority/introduction.html)
+
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+The following packages have to be installed and well configured on the host :
+- [Docker-ce](https://docs.docker.com/engine/installation/)
+- Python-pip
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+###User defined variables
+The following vars have to be defined on each execution by the user to configure the issued certificate
+
+####Mandatory - Certificat fields values
+- ca_manager_cn_name: "MyCA"
+  - The value of certificat CN field (by default used to name the certificat itself)
+- ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=CloudCustom"
+  - The values of certificate fields except the CN field specifically setted in ca_manager_cn_name)
+
+####Mandatory and mutually exclusives - Type of issued certificate
+- ca_manager_issue_root_ca: true
+  - Issue Root CA signed by itself
+- ca_manager_issue_intermediate_ca: false
+  - Issue Intermediate CA signed by an other CA (Root or Intermediate)
+- ca_manager_issue_certificate: false
+  - Issue basic server certificat
+
+####Mandatory if ca_manager_issue_intermediate_ca or ca_manager_issue_certificate
+- ca_manager_signin_ca_cn_name: "RootCA"
+  - CN of previously generated CA that will be used to sign the issued certificate
+
+#### Optional parameters: Certificate key passphrase
+- ca_manager_key_pass: "s3cret p@ss phrase"
+  - The passphrase of the certificate key. If not defined the key is not encrypted (Not recomanded for CA certificates)
+- ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+  - The passphrase of the CA used to sign the issued certificate (if required).
+
+###Overridable default variables
+
+- ca_manager_output_location: "{{ role_path }}/../output"
+  - Location of all issued certificates
+- ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager_cn_name }}"
+  - Location of issued certificate files
+
+- ca_manager_signin_ca_cert_location: "{{ ca_manager_output_location }}/{{ ca_manager_signin_ca_cn_name|default('default') }}"
+  - Root location of CA files used to sign issued certificate
+
+- ca_manager_validation_policy: "{{ (ca_manager_issue_root_ca|default(false)|bool) | ternary('policy_strict', 'policy_loose') }}"
+  - CA Policy of validation of issued certificate subject fields.
+  - If policy_strict then the certificate has to have the same countryName, stateOrProvinceName and organizationName
+  - Default to policy_strict for certificates issued by root CA and policy_loose for thoses issued by intermediate CA
+- ca_manager_key_length: "{{ (ca_manager_issue_ca) | ternary('4096', '2048') }}"
+  - The lenght in bits of the issued certificate key
+  - default to 4096 for issued CA and 2048 for server certificates
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+--
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+See tests/test.yml (ansible-playbook -i certificate_authority_manager/tests/inventory certificate_authority_manager/tests/test.yml --connection=local)
 
-    - hosts: servers
+    ---
+    - hosts: localhost
+      serial: 1
       roles:
-         - { role: username.rolename, x: 42 }
+        - {
+            role: certificate_authority_manager,
+            ca_manager_issue_root_ca: true,
+            ca_manager_cn_name: "MyCompany_RootCA",
+            ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=MyCompany",
+            ca_manager_key_pass: "s3cret p@ss phrase"
+          }
+        - {
+            role: certificate_authority_manager,
+            ca_manager_issue_intermediate_ca: true,
+            ca_manager_cn_name: "MarketingDpt_CA",
+            ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=MyCompany",
+            ca_manager_key_pass: "s3cret p@ss phrase",
+            ca_manager_signin_ca_cn_name: "MyCompany_RootCA",
+            ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+          }
+        - {
+            role: certificate_authority_manager,
+            ca_manager_issue_certificate: true,
+            ca_manager_cn_name: "www.good-deal.com",
+            ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=MyCompany",
+            ca_manager_signin_ca_cn_name: "MarketingDpt_CA",
+            ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+          }
+        - {
+            role: certificate_authority_manager,
+            ca_manager_issue_certificate: true,
+            ca_manager_cn_name: "www.black-friday-special.com",
+            ca_manager_subject_without_cn: "/C=US/ST=CA/L=Los Angeles/O=MyCompany",
+            ca_manager_signin_ca_cn_name: "MarketingDpt_CA",
+            ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+          }
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/BastienF/MyPrivateCAManager

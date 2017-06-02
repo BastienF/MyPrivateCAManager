@@ -1,3 +1,5 @@
 ---
 
 ca_manager_issue_ca: "{{ (ca_manager_issue_root_ca|default(false)|bool) or (ca_manager_issue_intermediate_ca|default(false)|bool) }}"
+ca_manager_container_name: "ca_manager_openssl"
+ca_manager_signin_ca_cert_location_docker: "/root/ca"
