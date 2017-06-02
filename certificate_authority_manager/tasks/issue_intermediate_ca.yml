@@ -1,25 +1,12 @@
 ---
 
-- name: Generate Openssl conf file
-  template: src="openssl.cnf.j2" dest="{{ ca_manager_certificate_location }}/openssl.cnf"
-  vars:
-    policy: "{{ ca_manager_intermediate_ca_policy }}"
-
-- include: docker_openssl_handler.yml
-  vars:
-    openssl_command: "genrsa -aes256 -out private/{{ ca_manager_intermediate_ca_key_name }} -passout pass:{{ ca_manager_intermediate_ca_pass }} 4096"
-    command_name: "IntermediateCA - Create the intermediate key"
-
-- name: make intermediate key private
-  file: path="{{ ca_manager_certificate_location }}/private/{{ ca_manager_intermediate_ca_key_name }}" mode="0400"
-
 - include: docker_openssl_handler.yml
   vars:
     openssl_command: >
       req -config openssl.cnf
-      -key private/{{ ca_manager_intermediate_ca_key_name }} -passin pass:{{ ca_manager_intermediate_ca_pass }}
+      -key private/{{ ca_manager_key_name }} -passin pass:{{ ca_manager_key_pass }}
       -new -sha256
-      -out csr/{{ ca_manager_intermediate_ca_request_name }}
+      -out csr/{{ ca_manager_request_file_name }}
       -subj "/C=FR/ST=IdF/L=Paris/O=CloudCustom/CN={{ ca_manager_cn_name }}"
     command_name: "IntermediateCA - Create the intermediate certificate request"
 
@@ -27,14 +14,14 @@
   vars:
     openssl_command: >
       ca -config {{ ca_manager_signin_ca_cert_location_docker }}/openssl.cnf -extensions v3_intermediate_ca
-      -batch -passin pass:{{ ca_manager_root_ca_pass }}
+      -batch -passin pass:{{ ca_manager_signin_ca_key_pass }}
       -days 3650 -notext -md sha256
-      -in csr/{{ ca_manager_intermediate_ca_request_name }}
-      -out certs/{{ ca_manager_intermediate_ca_certificate_name }}
+      -in csr/{{ ca_manager_request_file_name }}
+      -out certs/{{ ca_manager_certificate_name }}
     command_name: "IntermediateCA - CA signs intermediate certificate from request"
 
 - name: Create the certificate chain file
-  shell: "cat {{ ca_manager_certificate_location }}/certs/{{ ca_manager_intermediate_ca_certificate_name }} {{ ca_manager_signin_ca_cert_location }}/certs/{{ ca_manager_signin_ca_cn_name }}.cert.pem > {{ ca_manager_certificate_location }}/certs/{{ ca_manager_intermediate_ca_fullchain_name }}"
+  shell: "cat {{ ca_manager_certificate_location }}/certs/{{ ca_manager_certificate_name }} {{ ca_manager_signin_ca_cert_location }}/certs/{{ ca_manager_signin_ca_cn_name }}.cert.pem > {{ ca_manager_certificate_location }}/certs/{{ ca_manager_fullchain_certificate_name }}"
 
 - name: make intermediate full chain cert readable
-  file: path="{{ ca_manager_certificate_location }}/certs/{{ ca_manager_intermediate_ca_fullchain_name }}" mode="0444"
+  file: path="{{ ca_manager_certificate_location }}/certs/{{ ca_manager_fullchain_certificate_name }}" mode="0444"
