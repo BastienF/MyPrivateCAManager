@@ -1,8 +1,8 @@
 ---
 
 - name: Openssl command - "{{ command_name }}"
-  environment:
-    PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
+#  environment:
+#    PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
   docker_container:
     name: "{{ ca_manager_container_name }}"
     image: bastienf/openssl

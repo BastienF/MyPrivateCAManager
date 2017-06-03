@@ -9,15 +9,15 @@
 
 - name: Check signin CA name is provided when needed
   fail: msg="You have to specify the signin CA CN in ca_manager_signin_ca_cn_name"
-  when: (not (ca_manager_issue_root_ca|default(false)|bool)) and ca_manager_signin_ca_cn_name is undefined
+  when: (not (ca_manager_issue_root_ca|default(false)|bool)) and (ca_manager_signin_ca_cn_name is undefined or ca_manager_signin_ca_cn_name|trim == "")
 
 - name: Check certificate CN is provided
   fail: msg="You have to specify the certificate CN in ca_manager_cn_name"
-  when: ca_manager_cn_name is undefined
+  when: ca_manager_cn_name is undefined or ca_manager_cn_name|trim == ""
 
 - name: Check certificate subject is provided
   fail: "msg='You have to specify the certificate subject without CN in format (/C=FR/ST=IdF/L=Paris/O=CloudCustom) in: ca_manager_subject_without_cn'"
-  when: ca_manager_subject_without_cn is undefined
+  when: ca_manager_subject_without_cn is undefined or ca_manager_subject_without_cn|trim == ""
 
 - stat: path="{{ ca_manager_certificate_location }}"
   register: cert_dir
@@ -31,5 +31,5 @@
 
 - name: Check if signin CA exists
   fail: "msg='There is no CA named: {{ ca_manager_signin_ca_cn_name }}'"
-  when: (not (ca_manager_issue_root_ca|default(false)|bool)) and ca_fullchain_cert.stat.exists  == False
+  when: (not (ca_manager_issue_root_ca|default(false)|bool)) and ca_fullchain_cert.stat.exists == False
 
