@@ -49,7 +49,7 @@ The following vars have to be defined on each execution by the user to configure
 
 ###Overridable default variables
 
-- ca_manager_output_location: "{{ role_path }}/../output"
+- ca_manager_output_location: "{{ role_path }}/../certificates"
   - Location of all issued certificates
 - ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager_cn_name }}"
   - Location of issued certificate files
