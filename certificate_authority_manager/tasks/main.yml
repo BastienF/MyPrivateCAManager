@@ -35,19 +35,30 @@
     policy: "{{ ca_manager_validation_policy }}"
   when: ca_manager_issue_ca | bool
 
-- name: init cert database
+- name: Init cert database
   file: path="{{ ca_manager_certificate_location }}/index.txt" state=touch
   when: ca_manager_issue_ca | bool
 
-- name: init cert database serial
+- name: Init cert database serial
   shell: echo 1000 > "{{ ca_manager_certificate_location }}/serial"
   when: ca_manager_issue_ca | bool
+
+- include: create_ssh_encrypted_key_pass_file.yml
+  when: ca_manager_encrypt_by_ssh_pub is defined and ca_manager_encrypt_by_ssh_pub|trim != ""
+
+- set_fact:
+    key_cipher: ""
+    key_decipher: ""
+    signin_ca_key_decipher: ""
 
 - name: Define ciphering parameters when passphrase provided
   set_fact:
     key_cipher: "-aes256 -passout pass:'{{ ca_manager_key_pass }}'"
     key_decipher: "-passin pass:'{{ ca_manager_key_pass }}'"
   when: ca_manager_key_pass is defined and ca_manager_key_pass|trim != ""
+
+- include: load_and_decrypt_signin_ca_key_pass_file.yml
+  when: ca_manager_signin_ca_decrypt_by_ssh_priv is defined and ca_manager_signin_ca_decrypt_by_ssh_priv|trim != ""
 
 - name: Define signin CA ciphering parameters when passphrase provided
   set_fact:
@@ -57,7 +68,7 @@
 - include: docker_openssl_handler.yml
   vars:
     openssl_command: >
-      genrsa  -out private/{{ ca_manager_key_name }}
+      openssl genrsa -out private/{{ ca_manager_key_name }}
       {{ key_cipher|default() }} {{ ca_manager_key_length }}
     command_name: "Create the certificate key"
 

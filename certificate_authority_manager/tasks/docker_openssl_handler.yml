@@ -1,15 +1,20 @@
 ---
 
+- set_fact:
+      default_volumes:
+        - "{{ ca_manager_certificate_location }}:/root/cert"
+        - "{{ (ca_manager_issue_root_ca|default(false)|bool) | ternary('/tmp', ca_manager_signin_ca_cert_location) + ':' + ca_manager_signin_ca_cert_location_docker }}"
+
+
 - name: Openssl command - "{{ command_name }}"
 #  environment:
 #    PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
   docker_container:
     name: "{{ ca_manager_container_name }}"
-    image: bastienf/openssl
+    image: bastienf/certificate_authority_manager
     state: started
     interactive: true
-    command: "{{ openssl_command }}"
+    command: "bash -c '{{ openssl_command }}'"
     detach: false
-    volumes:
-      - "{{ ca_manager_certificate_location }}:/root/cert"
-      - "{{ (ca_manager_issue_root_ca|default(false)|bool) | ternary('/tmp', ca_manager_signin_ca_cert_location) + ':' + ca_manager_signin_ca_cert_location_docker }}"
+    volumes: "{{ default_volumes + embedded_files|default([]) }}"
+  register: docker_output

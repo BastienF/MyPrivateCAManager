@@ -34,3 +34,29 @@
         ca_manager_signin_ca_cn_name: "MarketingDpt_CA",
         ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
       }
+#    - {
+#        role: certificate_authority_manager,
+#        ca_manager_issue_root_ca: true,
+#        ca_manager_cn_name: "sshcrypt_RootCA",
+#        ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=MyCompany",
+#        ca_manager_encrypt_by_ssh_pub: "~/.ssh/id_rsa.pub"
+#      }
+#    - {
+#        role: certificate_authority_manager,
+#        ca_manager_issue_intermediate_ca: true,
+#        ca_manager_cn_name: "sshcrypt_intermediate_CA",
+#        ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=MyCompany",
+#        ca_manager_signin_ca_cn_name: "sshcrypt_RootCA",
+#        ca_manager_encrypt_by_ssh_pub: "/Users/bastien/.ssh/id_rsa.pub",
+#        ca_manager_signin_ca_decrypt_by_ssh_priv: "~/.ssh/id_rsa",
+#        ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase: "id_rsa s3cret p@ssphrase"
+#      }
+#    - {
+#        role: certificate_authority_manager,
+#        ca_manager_issue_certificate: true,
+#        ca_manager_cn_name: "www.sshcrypt.com",
+#        ca_manager_subject_without_cn: "/C=US/ST=CA/L=Los Angeles/O=MyCompany",
+#        ca_manager_signin_ca_cn_name: "sshcrypt_intermediate_CA",
+#        ca_manager_signin_ca_decrypt_by_ssh_priv: "~/.ssh/id_rsa",
+#        ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase: "id_rsa s3cret p@ssphrase"
+#      }

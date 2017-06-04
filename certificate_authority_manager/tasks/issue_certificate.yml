@@ -3,7 +3,7 @@
 - include: docker_openssl_handler.yml
   vars:
     openssl_command: >
-      req -config {{ ca_manager_signin_ca_cert_location_docker }}/openssl.cnf
+      openssl req -config {{ ca_manager_signin_ca_cert_location_docker }}/openssl.cnf
       -key private/{{ ca_manager_key_name }} {{ key_decipher|default() }}
       -new -sha256
       -out csr/{{ ca_manager_request_file_name }}
@@ -13,7 +13,7 @@
 - include: docker_openssl_handler.yml
   vars:
     openssl_command: >
-      ca -config {{ ca_manager_signin_ca_cert_location_docker }}/openssl.cnf -extensions server_cert
+      openssl ca -config {{ ca_manager_signin_ca_cert_location_docker }}/openssl.cnf -extensions server_cert
       -batch {{ signin_ca_key_decipher|default() }}
       -days 375 -notext -md sha256
       -in csr/{{ ca_manager_request_file_name }}

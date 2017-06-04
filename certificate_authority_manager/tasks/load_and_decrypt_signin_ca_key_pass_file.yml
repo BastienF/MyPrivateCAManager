@@ -1,0 +1,21 @@
+---
+
+- set_fact:
+    signin_ca_key_ssh_priv_pass_decipher: ""
+
+- name: Define ciphering parameters when passphrase provided
+  set_fact:
+    signin_ca_key_ssh_priv_pass_decipher: "-passin pass:'{{ ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase }}'"
+  when: ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase is defined and ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase|trim != ""
+
+- include: docker_openssl_handler.yml
+  vars:
+    openssl_command: >
+      openssl rsautl -decrypt -oaep -inkey /root/key_ssh_priv_pass
+      -in {{ ca_manager_signin_ca_key_encrypted_pass_file_location_docker }} {{ signin_ca_key_ssh_priv_pass_decipher }}
+    command_name: "Decrypt the certificate key pass file"
+    embedded_files:
+      - "{{ ca_manager_signin_ca_decrypt_by_ssh_priv }}:/root/key_ssh_priv_pass"
+
+- set_fact:
+      ca_manager_signin_ca_key_pass: "{{ docker_output.ansible_facts.docker_container.Output| replace('\n', '') }}"
