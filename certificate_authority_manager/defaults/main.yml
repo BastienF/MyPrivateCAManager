@@ -1,20 +1,25 @@
 ---
 
-## Mandatory user provided parameters
+### Mandatory user provided parameters
 #ca_manager_cn_name: "MyCA"
 #ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=CloudCustom"
 
-## Exactly one to true (mutually exclusive)
+### Exactly one to true (mutually exclusive)
 #ca_manager_issue_root_ca: true
 #ca_manager_issue_intermediate_ca: false
 #ca_manager_issue_certificate: false
 
-## Mandatory if ca_manager_issue_intermediate_ca or ca_manager_issue_certificate
+### Mandatory if ca_manager_issue_intermediate_ca or ca_manager_issue_certificate
 #ca_manager_signin_ca_cn_name: "RootCA"
 
-## Optional user provided parameters
+### Optional user provided parameters
+## Either
 #ca_manager_key_pass: "s3cret p@ss phrase"
 #ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
+## Either
+#ca_manager_encrypt_by_ssh_pub: "/home/user/.ssh/id_rsa.pub",
+#ca_manager_signin_ca_decrypt_by_ssh_priv: "/home/user/.ssh/id_rsa",
+#ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase: "id_rsa s3cret p@ssphrase"
 
 ca_manager_output_location: "{{ playbook_dir }}/certificates"
 ca_manager_certificate_location: "{{ ca_manager_output_location }}/{{ ca_manager_cn_name }}"

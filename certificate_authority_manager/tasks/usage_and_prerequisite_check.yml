@@ -19,6 +19,10 @@
   fail: "msg='You have to specify the certificate subject without CN in format (/C=FR/ST=IdF/L=Paris/O=CloudCustom) in: ca_manager_subject_without_cn'"
   when: ca_manager_subject_without_cn is undefined or ca_manager_subject_without_cn|trim == ""
 
+- name: Check that passphrase and ssh public file are not both supplied
+  fail: msg="You have to specify only one between ca_manager_key_pass and ca_manager_encrypt_by_ssh_pub"
+  when: ca_manager_key_pass is defined and ca_manager_key_pass|trim != "" and ca_manager_encrypt_by_ssh_pub is defined and ca_manager_encrypt_by_ssh_pub|trim != ""
+
 - stat: path="{{ ca_manager_certificate_location }}"
   register: cert_dir
 

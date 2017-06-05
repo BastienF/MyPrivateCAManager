@@ -11,8 +11,8 @@
     - docker-py
 
 - name: Clear out potential openssl container
-  #environment:
-  #  PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
+#  environment:
+#    PYTHONPATH: "/usr/local/lib/python2.7/site-packages"
   docker_container:
     name: "{{ ca_manager_container_name }}"
     state: absent
@@ -55,6 +55,7 @@
   set_fact:
     key_cipher: "-aes256 -passout pass:'{{ ca_manager_key_pass }}'"
     key_decipher: "-passin pass:'{{ ca_manager_key_pass }}'"
+  no_log: true
   when: ca_manager_key_pass is defined and ca_manager_key_pass|trim != ""
 
 - include: load_and_decrypt_signin_ca_key_pass_file.yml
@@ -62,7 +63,8 @@
 
 - name: Define signin CA ciphering parameters when passphrase provided
   set_fact:
-    signin_ca_key_decipher: '-passin pass:"{{ ca_manager_signin_ca_key_pass }}"'
+    signin_ca_key_decipher: "-passin pass:'{{ ca_manager_signin_ca_key_pass }}'"
+  no_log: true
   when: ca_manager_signin_ca_key_pass is defined and ca_manager_signin_ca_key_pass|trim != ""
 
 - include: docker_openssl_handler.yml

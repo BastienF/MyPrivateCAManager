@@ -7,18 +7,16 @@
     command_name: "Create the certificate key pass file"
 
 - set_fact:
-      ca_manager_key_pass: "{{ docker_output.ansible_facts.docker_container.Output| replace('\n', '') }}"
-
-- debug:
-    msg: "{{ ca_manager_key_pass }}"
+    ca_manager_key_pass_decrypted: "{{ docker_output.ansible_facts.docker_container.Output| replace('\n', '') }}"
+  no_log: true
 
 - include: docker_openssl_handler.yml
   vars:
     openssl_command: >
-      echo "{{ ca_manager_key_pass }}" |
+      echo '{{ ca_manager_key_pass_decrypted }}' |
       openssl rsautl -encrypt -oaep -pubin
       -inkey <(ssh-keygen -e -f /root/key_ssh_pub_pass -m PKCS8)
       -out {{ ca_manager_key_encrypted_pass_file_location_docker }}
     command_name: "Encrypt the certificate key pass file"
     embedded_files:
-          - "{{ ca_manager_encrypt_by_ssh_pub }}:/root/key_ssh_pub_pass"
+          - "{{ ca_manager_encrypt_by_ssh_pub }}:/root/key_ssh_pub_pass:ro"

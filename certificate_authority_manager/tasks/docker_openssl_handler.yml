@@ -14,7 +14,8 @@
     image: bastienf/certificate_authority_manager
     state: started
     interactive: true
-    command: "bash -c '{{ openssl_command }}'"
+    command: 'bash -c "{{ openssl_command }}"'
     detach: false
     volumes: "{{ default_volumes + embedded_files|default([]) }}"
   register: docker_output
+  no_log: true

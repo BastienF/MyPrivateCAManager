@@ -41,11 +41,19 @@ The following vars have to be defined on each execution by the user to configure
 - ca_manager_signin_ca_cn_name: "RootCA"
   - CN of previously generated CA that will be used to sign the issued certificate
 
-#### Optional parameters: Certificate key passphrase
+#### Optional parameters: Certificate key protection
+##### Either protection by passphrase
 - ca_manager_key_pass: "s3cret p@ss phrase"
-  - The passphrase of the certificate key. If not defined the key is not encrypted (Not recomanded for CA certificates)
+  - The passphrase of the certificate key. If not defined (nor ca_manager_encrypt_by_ssh_pub) the key is not encrypted (Not recomanded for CA certificates)
 - ca_manager_signin_ca_key_pass: "s3cret p@ss phrase"
   - The passphrase of the CA used to sign the issued certificate (if required).
+##### Either protection by ssh key ciphering
+- ca_manager_encrypt_by_ssh_pub: "/home/user/.ssh/id_rsa.pub"
+  - The public ssh key to use to cipher the certificate. If not defined (nor ca_manager_key_pass) the key is not encrypted (Not recomanded for CA certificates)
+- ca_manager_signin_ca_decrypt_by_ssh_priv: "/home/user/.ssh/id_rsa"
+  - The private ssh key to use to decipher the CA used to sign the issued certificate (if required).
+- ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase: "id_rsa s3cret p@ssphrase"
+  - The passphrase of the private ssh key to use to decipher the CA used to sign the issued certificate (if required).
 
 ###Overridable default variables
 

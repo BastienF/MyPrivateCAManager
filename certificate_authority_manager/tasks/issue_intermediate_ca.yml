@@ -7,7 +7,7 @@
       -key private/{{ ca_manager_key_name }} {{ key_decipher|default() }}
       -new -sha256
       -out csr/{{ ca_manager_request_file_name }}
-      -subj "{{ ca_manager_subject_without_cn }}/CN={{ ca_manager_cn_name }}"
+      -subj '{{ ca_manager_subject_without_cn }}/CN={{ ca_manager_cn_name }}'
     command_name: "IntermediateCA - Create the intermediate certificate request"
 
 - include: docker_openssl_handler.yml
