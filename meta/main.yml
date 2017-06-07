@@ -32,43 +32,43 @@ galaxy_info:
   #
   # platforms is a list of platforms, and each platform has a name and a list of versions.
   #
- platforms:
-  - name: EL
-    versions:
-    - all
-  - name: GenericUNIX
-    versions:
-    - all
-  - name: Fedora
-    versions:
-    - all
-  - name: opensuse
-    versions:
-    - all
-  - name: Amazon
-    versions:
-    - all
-  - name: GenericBSD
-    versions:
-    - all
-  - name: FreeBSD
-    versions:
-    - all
-  - name: Ubuntu
-    versions:
-    - all
-  - name: SLES
-    versions:
-    - all
-  - name: GenericLinux
-    versions:
-    - all
-  - name: Debian
-    versions:
-    - all
-  - name: MacOSX
-    versions:
-    - all
+  platforms:
+    - name: EL
+      versions:
+      - all
+    - name: GenericUNIX
+      versions:
+      - all
+    - name: Fedora
+      versions:
+      - all
+    - name: opensuse
+      versions:
+      - all
+    - name: Amazon
+      versions:
+      - all
+    - name: GenericBSD
+      versions:
+      - all
+    - name: FreeBSD
+      versions:
+      - all
+    - name: Ubuntu
+      versions:
+      - all
+    - name: SLES
+      versions:
+      - all
+    - name: GenericLinux
+      versions:
+      - all
+    - name: Debian
+      versions:
+      - all
+    - name: MacOSX
+      versions:
+      - all
 
   galaxy_tags:
     - certificate
