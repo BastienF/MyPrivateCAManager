@@ -20,16 +20,16 @@ The following packages have to be installed and well configured on the host :
 Role Variables
 --------------
 
-###User defined variables
+### User defined variables
 The following vars have to be defined on each execution by the user to configure the issued certificate
 
-####Mandatory - Certificat fields values
+#### Mandatory - Certificat fields values
 - ca_manager_cn_name: "MyCA"
   - The value of certificat CN field (by default used to name the certificat itself)
 - ca_manager_subject_without_cn: "/C=FR/ST=IdF/L=Paris/O=CloudCustom"
   - The values of certificate fields except the CN field specifically setted in ca_manager_cn_name)
 
-####Mandatory and mutually exclusives - Type of issued certificate
+#### Mandatory and mutually exclusives - Type of issued certificate
 - ca_manager_issue_root_ca: true
   - Issue Root CA signed by itself
 - ca_manager_issue_intermediate_ca: false
@@ -37,7 +37,7 @@ The following vars have to be defined on each execution by the user to configure
 - ca_manager_issue_certificate: false
   - Issue basic server certificat
 
-####Mandatory if ca_manager_issue_intermediate_ca or ca_manager_issue_certificate
+#### Mandatory if ca_manager_issue_intermediate_ca or ca_manager_issue_certificate
 - ca_manager_signin_ca_cn_name: "RootCA"
   - CN of previously generated CA that will be used to sign the issued certificate
 
@@ -55,7 +55,7 @@ The following vars have to be defined on each execution by the user to configure
 - ca_manager_signin_ca_decrypt_by_ssh_priv_passphrase: "id_rsa s3cret p@ssphrase"
   - The passphrase of the private ssh key to use to decipher the CA used to sign the issued certificate (if required).
 
-###Overridable default variables
+### Overridable default variables
 
 - ca_manager_output_location: "{{ role_path }}/../certificates"
   - Location of all issued certificates
